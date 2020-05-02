@@ -1,0 +1,160 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border:maroon solid 10px;
+  margin:0px;
+  height: 90vh;
+}
+h1 {
+  text-decoration: underline;
+  margin-bottom:0px;
+  width:inherit;
+  text-align: center;
+}
+header {
+  width:300px;
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+main button {
+  width:300px;
+}
+.fa.fa-star.checked {
+  color:gold;
+}
+
+option {
+  content: "\2B50";
+  text-align: center;
+  font-size: 12px;
+  margin:2px;
+}
+
+.bookmarkButton {
+  display:flex;
+  align-items: center;
+  height: 30px;
+}
+
+.bookmarkButton * {
+  height:20px;
+}
+
+.bookmarkButton p {
+  width:218px;
+  margin:0;
+  margin-top:5px;
+}
+.starBox * {
+  width:10px
+}
+
+footer {
+  position:absolute;
+  bottom:0;
+  margin-top:5px;
+}
+
+footer button {
+  font-size:20px;
+  width:100vw;
+  height:10vh;
+}
+
+
+
+
+
+.rate {
+  float: left;
+  height: 46px;
+  padding: 0 10px;
+}
+.rate:not(:checked) > input {
+  position:absolute;
+  top:-9999px;
+}
+.rate:not(:checked) > label {
+  float:right;
+  width:1em;
+  overflow:hidden;
+  white-space:nowrap;
+  cursor:pointer;
+  font-size:30px;
+  color:#ccc;
+}
+.rate:not(:checked) > label:before {
+  content: '★ ';
+}
+.rate > input:checked ~ label {
+  color: #ffc700;    
+}
+.rate:not(:checked) > label:hover,
+.rate:not(:checked) > label:hover ~ label {
+  color: #deb217;  
+}
+.rate > input:checked + label:hover,
+.rate > input:checked + label:hover ~ label,
+.rate > input:checked ~ label:hover,
+.rate > input:checked ~ label:hover ~ label,
+.rate > label:hover ~ input:checked ~ label {
+  color: #c59b08;
+}
+
+legend {
+  color:white;
+}
+
+
+
+.overlay {
+  height: 100vh;
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: rgb(0,0,0);
+  background-color: rgba(0,0,0, 0.9);
+  overflow-x: hidden;
+  transition: 0.5s;
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.overlay * {
+  position: relative;
+  top: 10vw;
+  width: 80vw;
+  text-align: center;
+}
+
+.overlay a {
+  padding: 8px;
+  text-decoration: none;
+  font-size: 36px;
+  color: #818181;
+  display: block;
+  transition: 0.3s;
+}
+
+.overlay .closebtn {
+  position: absolute;
+  top: 20px;
+  right: 45px;
+  font-size: 60px;
+}
+
