@@ -1,11 +1,14 @@
 * {
   box-sizing: border-box;
 }
+.hidden {
+  display:none;
+}
 body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  border:maroon solid 10px;
+  border:maroon solid 2.5vw;
   margin:0px;
   height: 90vh;
 }
@@ -26,25 +29,45 @@ main {
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow:scroll;
 }
 main button {
-  width:300px;
+  width:95vw;
 }
 .fa.fa-star.checked {
   color:gold;
 }
 
 option {
-  content: "\2B50";
   text-align: center;
   font-size: 12px;
   margin:2px;
 }
 
+.buttonBox {
+  display:flex;
+}
+
+p.expanded {
+  background-color: grey;
+  width:95vw;
+  margin:0;
+  padding:5px;
+}
+
+.expandedButtonBox {
+  display:flex;
+  width:95vw;
+}
+
 .bookmarkButton {
   display:flex;
   align-items: center;
-  height: 30px;
+  height: 5vh;
+}
+
+.deleteButton {
+  background-color:red;
 }
 
 .bookmarkButton * {

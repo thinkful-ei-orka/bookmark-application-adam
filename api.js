@@ -14,9 +14,14 @@ const apiRead = function(){
   return fetch(`${baseUrl}/bookmarks`)
 }
 
-const apiUpdate = function(){}
+const apiUpdate = function(id,updatedObject){
+  return fetch(`${baseUrl}/bookmarks/${id}`,
+  {method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(updatedObject)})
+}
 
-const apiDelete = function(){}
+const apiDelete = function(id){
+  return fetch(`${baseUrl}/bookmarks/${id}`,{method:'DELETE',headers:{'Content-Type':'application/json'}})
+}
 
 
 export default {
@@ -24,5 +29,4 @@ export default {
   apiRead,
   apiUpdate,
   apiDelete,
-  
 }
