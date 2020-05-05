@@ -1,8 +1,8 @@
 * {
   box-sizing: border-box;
 }
-.hidden {
-  display:none;
+.hidden{
+  display:none
 }
 body {
   display: flex;
@@ -183,3 +183,11 @@ div.rate {
 .rate > label:hover ~ input:checked ~ label {
   color: #c59b08;
 }
+
+.errorBox {
+  color:palevioletred;
+  position:absolute;
+  top:2.5vh;
+  right:5vw;
+}
+

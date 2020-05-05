@@ -9,7 +9,6 @@ const mainPageRender = function(){
     <h1>My bookmarks</h1>
     <select id='filter'>
       <option value='' disabled selected>Filter by Rating</option>
-      <option value='0'>No rating+</option>
       <option value='1'>&#11088+</option>
       <option value='2'>&#11088&#11088+</option>
       <option value='3'>&#11088&#11088&#11088+</option>
@@ -25,70 +24,69 @@ const mainPageRender = function(){
   <form id='newForm' class='overlay'>
   </form>`
   );
-  $(filterHandler);
-  $(newBookmarkButton);
-  $(mainButtonRender);
 };
 
 //creates the html string for each bookmark in the list
 const bookmarkString = function(filter){
-  return api.apiRead().then(x=>x.json()).then(x=>x.filter(y=>y.rating>=filter)).then(x=>x.map(y=>{
+  return store.Store.bookmarks.filter(x=>x.rating>=filter).map(y=>{
     let z='';
     for(let i=0;i<5;i++){
       if(i<y.rating){z+='<span class=\'fa fa-star checked\'></span>';} else{z+='<span class=\'fa fa-star\'></span>';}
     }
-    return `
-      <button type='button' class='bookmarkButton' id='${y.id}' value='${y.id}'>
-        <p>${y.title}</p>
-        <div class='starBox'>
-          ${z}
-        </div>
-      </button>
-      <p data='${y.id} description' class='details hidden'>
-        <b>Description:  </b>${y.desc===null?'No description provided':y.desc}
-      </p>
-      <p data='${y.id} url' class='url hidden'>
-        <b>Url:  </b>${y.url}
-      </p>
-      <section class='expandedButtonBox'>
-        <button type='button' data='${y.id} visit' class='visitButton hidden' value='${y.url}'>
-          Visit
+    if(y.expanded){
+      return `
+        <button type='button' class='bookmarkButton' id='${y.id}' value='${y.id}'>
+          <p>${y.title}</p>
+          <div class='starBox'>
+            ${z}
+          </div>
         </button>
-        <button type='button' data='${y.id} edit' class='editButton hidden'>
-          Edit
-        </button>
-        <button class='deleteButton hidden' type='button' data='${y.id}'>
-          Delete &#128465
-        </button>
-      </section>
-        `;})).then(x=>x.join('')).then(x=>{$('main').html(x);
-    $(condensedHandler);});
-  ////////////////Wrong, shouldn't be building in this function
+        <p data='${y.id} description' class='details expanded'>
+          <b>Description:  </b>${y.desc===null?'No description provided':y.desc}
+        </p>
+        <p data='${y.id} url' class='url expanded'>
+          <b>Url:  </b>${y.url}
+        </p>
+        <section class='expandedButtonBox'>
+          <button type='button' data='${y.id} visit' class='visitButton' value='${y.url}'>
+            Visit
+          </button>
+          <button type='button' data='${y.id} edit' class='editButton'>
+            Edit
+          </button>
+          <button class='deleteButton' type='button' data='${y.id}'>
+            Delete &#128465
+          </button>
+        </section>`;
+    } else {
+      return `<button type='button' class='bookmarkButton' id='${y.id}' value='${y.id}'><p>${y.title}</p><div class='starBox'>${z}</div>`;
+    }}).join('');
 };
 
-//solution after moving to store-state instaed of api call***
-
-//pulls the current bookmarks via api and renders a bookmark button for each, placing the bookmark id as its value
 const mainButtonRender = function(){
-  bookmarkString(0);
-  ///////////Fix this - not generating the list$('main').html();
+  $('main').html(bookmarkString(store.Store.filter));
+  condensedHandler();
+  visitButtonHandler();
+  editButtonHandler();
+  deleteButtonHandler();
 };
 
 const formRender=function(){
   $('form').html(`
+    <p class='errorBox'></p>
     <input type='text' id='title' name='title' placeholder='Title' required>
     <input type='text' id='url' name='url' placeholder='URL' required>
-    <input type='text' id='desc' name='desc' placeholder='Description'>
+    <input type='text' id='desc' name='desc' placeholder='Description' required>
     <div class='rate'>
-      <input type="radio" id="star5" name="rate" value=5>
+      <input type="radio" id="star5" name="rate" value=5 required>
         <label for="star5" title="text">5 stars</label>
-      <input type="radio" id="star4" name="rate" value=4>
+      <input type="radio" id="star4" name="rate" value=4 required>
         <label for="star4" title="text">4 stars</label>
-      <input type="radio" id="star3" name="rate" value=3>
+      <input type="radio" id="star3" name="rate" value=3 required>
         <label for="star3" title="text">3 stars</label>
-      <input type="radio" id="star2" name="rate" value=2>
+      <input type="radio" id="star2" name="rate" value=2 required>
         <label for="star2" title="text">2 stars</label>
-      <input type="radio" id="star1" name="rate" value=1>
+      <input type="radio" id="star1" name="rate" value=1 required>
         <label for="star1" title="text">1 star</label>
     </div>
     <section class='buttonBox'>
@@ -99,6 +97,7 @@ const formRender=function(){
 
 const editFormRender=function(item){
   $('form').html(`
+    <p class='errorBox'></p>
     <input type='text' id='title' name='title' value='${item.title}' required>
     <input type='text' id='url' name='url' value='${item.url}' required>
     <input type='text' id='desc' name='desc' ${item.desc===null?"placeholder='Description'":`value=${item.desc}`}>
@@ -123,37 +122,36 @@ const editFormRender=function(item){
 //Pulls the value of the current filter selection, and runs the render function for the bookmark list based upon the current value.
 const filterHandler = function(){
   $('#filter').on('change', function(e){
-    bookmarkString($(e.currentTarget).val());
+    store.Store.filter=$(e.currentTarget).val();
+    mainButtonRender();
   });
 };
 
 //pulls a bookmark's data by id
 const bookmarkById = function(id){
-  return api.apiRead().then(x=>x.json()).then(y=>y.find(x=>x.id===id));
+  return store.Store.bookmarks.find(x=>x.id===id);
+};
+
+const bookmarkIndex = function(id){
+  return store.Store.bookmarks.findIndex(x=>x.id===id);
 };
 //Pulls the id of the bookmark to be changed, and fills in the expanded/detail view of that bookmark
 const condensedHandler=function(){
   $('.bookmarkButton').on('click',function(e){
-    $(`*[data~=${$(e.currentTarget).val()}]`).toggleClass(['hidden','expanded']);
-    visitButtonHandler();
-    editButtonHandler();
-    deleteButtonHandler();
+    let targetId=$(e.currentTarget).val();
+    store.Store.bookmarks[bookmarkIndex(targetId)].expanded=!bookmarkById(targetId).expanded;
+    mainButtonRender();
+    
   });
 };
-
-
-
-//////////////
-
-
 
 
 ////////////Delete Handler
 const deleteButtonHandler = function(){
   $('.deleteButton').on('click',function(e){
-    api.apiDelete(e.currentTarget.getAttribute('data')).then(x=>bookmarkString(0));
-  })
-}
+    api.apiDelete(e.currentTarget.getAttribute('data')).then(()=>refresh());
+  });
+};
 
 
 ///////////Expanded view buttons
@@ -164,34 +162,34 @@ const visitButtonHandler = function(){
   });
 };
 
+//variable to identify the element to be edited within the server (see editButtonHandler -> editFormSubmitHandler)
 let editId = '';
 
 //Handles the render and handling of the edit form
 const editButtonHandler = function(){
   $('.editButton').on('click',function(e){
     editId = e.currentTarget.getAttribute('data').split(' ')[0];
-    bookmarkById(editId).then(x=>{
-      editFormRender(x);
-      formCancelHandler();
-      editFormSubmitHandler();});
+    editFormRender(bookmarkById(editId));
+    formCancelHandler();
+    editFormSubmitHandler();
     $('#newForm').css('width','100%');
   });
 };
 
-//Moves away the form and re-renders the button list
-const editFormComplete = function(){
-  $('#newForm').css('width','0%');
-  bookmarkString(0);
-};
+
 ////////////Edit Bookmark Form//////////////
 //listens to the submit button on the edit for, verifies its validity and pushes it to completion if it resolves
 const editFormSubmitHandler = function(x){
   $('.editFormSubmit').on('click',function(e){
     e.preventDefault();
-    api.apiUpdate(editId,formSubmitObject()).then(x=>x.status===400?alert('Title and URL with http/https required'):editFormComplete());
+    if ($(`input[name='desc']`).val()===''){store.Store.error='Description required';}
+    else if ($(`input[name='rate']:checked`).val()===undefined){
+      store.Store.error='Rating required';}
+    else{
+      api.apiUpdate(editId,formSubmitObject()).then(()=>formComplete()).catch(error=>store.Store.error=error.message);}
+    $('.errorBox').html(`${store.Store.error}`);
   });
 };
-
 ////////////New Bookmark Creation////////////
 //Pulls open the form to create a new bookmark
 const newBookmarkButton = function(){
@@ -207,21 +205,26 @@ const newBookmarkButton = function(){
 //organizes the object of form information on submit
 const formSubmitObject = function(){
   let o={};
-  [$('input[name=\'title\']').val(),$('input[name=\'url\']').val(),$('input[name=\'desc\']').val(),Number($('input[name=\'rate\']:checked').val())].forEach((x,y)=>x===undefined||x===''?null:o[['title','url','desc','rating'][y]]=x);
+  [$(`input[name='title']`).val(),$(`input[name='url']`).val(),$(`input[name='desc']`).val(),Number($(`input[name='rate']:checked`).val())].forEach((x,y)=>x===undefined||x===''?null:o[['title','url','desc','rating'][y]]=x);
   return o;
 };
 
 //Submits form, re-renders the list and the form, hides the form screen
 const formComplete = function(){
   $('#newForm').css('width','0%');
-  bookmarkString(0);
+  refresh();
 };
 
 //checks the form for missing information and either throws an alert or passes the info to the form completion function
 const formSubmitHandler=function(){
   $('.newFormSubmit').on('click',function(e){
     e.preventDefault();
-    api.apiCreate(formSubmitObject()).then(x=>x.status===400?alert('Title and URL with http/https required'):formComplete());
+    if ($(`input[name='desc']`).val()===''){store.Store.error='Description required';}
+    else if ($(`input[name='rate']:checked`).val()===undefined){
+      store.Store.error='Rating required';}
+    else{
+      api.apiCreate(formSubmitObject()).then(()=>formComplete()).catch(error=>store.Store.error=error.message);}
+    $('.errorBox').html(`${store.Store.error}`);
   });
 };
 
@@ -235,12 +238,22 @@ const formCancelHandler = function(){
 
 
 
-//Unnecessary*****
-//performs the initial render of the page and logs the current data in the api to the console, additionally performs the initial rendering of the store object
+//Clears current store and pulls the current list
+const refresh = function(){
+  store.emptyStore();
+  api.apiRead().then(x=>{
+    x.forEach(y=>store.instertStore(y));
+    store.Store.bookmarks.forEach(x=>x.expanded=false);
+    mainButtonRender();
+  });
+};
+
 const main = function(){
-  $(mainPageRender);
-  store.refreshStore();
-  console.log(store)
+  mainPageRender();
+  filterHandler();
+  newBookmarkButton();
+
+  refresh();
 };
 
 
