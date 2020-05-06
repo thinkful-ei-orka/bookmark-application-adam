@@ -1,6 +1,7 @@
 import $ from 'jquery'
 import api from './api.js';
 import store from './store.js';
+import './index.css';
 
 //Render function for the main page
 const mainPageRender = function(){
