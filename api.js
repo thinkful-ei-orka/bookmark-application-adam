@@ -14,9 +14,6 @@ const apiFetch = function(...args){
         return Promise.reject(error);
       } }
     return x.json();}).then(data=>{
-    if(data.code===400){
-      return data
-    }
     if(error){
       error.message = data.message;
       return Promise.reject(error);

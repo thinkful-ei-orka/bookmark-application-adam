@@ -37,9 +37,9 @@ const bookmarkString = function(filter){
       return `
         <button type='button' class='bookmarkButton' id='${y.id}' value='${y.id}'>
           <p>${y.title}</p>
-          <div class='starBox'>
+          <section class='starBox'>
             ${z}
-          </div>
+          </section>
         </button>
         <p data='${y.id} description' class='details expanded'>
           <b>Description:  </b>${y.desc===null?'No description provided':y.desc}
@@ -59,7 +59,7 @@ const bookmarkString = function(filter){
           </button>
         </section>`;
     } else {
-      return `<button type='button' class='bookmarkButton' id='${y.id}' value='${y.id}'><p>${y.title}</p><div class='starBox'>${z}</div>`;
+      return `<button type='button' class='bookmarkButton' id='${y.id}' value='${y.id}'><p>${y.title}</p><section class='starBox'>${z}</section>`;
     }}).join('');
 };
 
@@ -77,7 +77,7 @@ const formRender=function(){
     <input type='text' id='title' name='title' placeholder='Title' required>
     <input type='text' id='url' name='url' placeholder='URL' required>
     <input type='text' id='desc' name='desc' placeholder='Description' required>
-    <div class='rate'>
+    <section class='rate'>
       <input type="radio" id="star5" name="rate" value=5 required>
         <label for="star5" title="text">5 stars</label>
       <input type="radio" id="star4" name="rate" value=4 required>
@@ -88,7 +88,7 @@ const formRender=function(){
         <label for="star2" title="text">2 stars</label>
       <input type="radio" id="star1" name="rate" value=1 required>
         <label for="star1" title="text">1 star</label>
-    </div>
+    </section>
     <section class='buttonBox'>
       <button type='button' class='cancelForm'>Cancel</button>
       <button type='submit' class='newFormSubmit'>Add Bookmark</button>  
@@ -101,7 +101,7 @@ const editFormRender=function(item){
     <input type='text' id='title' name='title' value='${item.title}' required>
     <input type='text' id='url' name='url' value='${item.url}' required>
     <input type='text' id='desc' name='desc' ${item.desc===null?"placeholder='Description'":`value=${item.desc}`}>
-    <div class='rate'> 
+    <section class='rate'> 
       <input type="radio" id="star5" name="rate" value=5${item.rating===5?' checked':''}>
         <label for="star5" title="text">5 stars</label>
       <input type="radio" id="star4" name="rate" value=4${item.rating===4?' checked':''}>
@@ -112,7 +112,7 @@ const editFormRender=function(item){
         <label for="star2" title="text">2 stars</label>
       <input type="radio" id="star1" name="rate" value=1${item.rating===1?' checked':''}>
         <label for="star1" title="text">1 star</label>
-    </div>
+    </section>
     <section class='buttonBox data='${item.id}'>
       <button type='button' class='cancelForm'>Cancel</button>
       <button type='submit' class='editFormSubmit'>Update Bookmark</button>  
@@ -187,7 +187,7 @@ const editFormSubmitHandler = function(x){
       store.Store.error='Rating required';}
     else{
       api.apiUpdate(editId,formSubmitObject()).then(()=>formComplete()).catch(error=>store.Store.error=error.message);}
-    $('.errorBox').html(`${store.Store.error}`);
+      store.Store.error!==null?$('.errorBox').html(`${store.Store.error}`):null;
   });
 };
 ////////////New Bookmark Creation////////////
@@ -224,7 +224,7 @@ const formSubmitHandler=function(){
       store.Store.error='Rating required';}
     else{
       api.apiCreate(formSubmitObject()).then(()=>formComplete()).catch(error=>store.Store.error=error.message);}
-    $('.errorBox').html(`${store.Store.error}`);
+    store.Store.error!==null?$('.errorBox').html(`${store.Store.error}`):null;
   });
 };
 
@@ -248,11 +248,11 @@ const refresh = function(){
   });
 };
 
+//initial page fill
 const main = function(){
   mainPageRender();
   filterHandler();
   newBookmarkButton();
-
   refresh();
 };
 

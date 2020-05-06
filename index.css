@@ -23,16 +23,23 @@ header {
   display:flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 1.5vh;
+}
+
+header select {
+  margin-top: 1vh;
+  height:3vh;
 }
 main {
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow:scroll;
+  overflow:auto;
 }
 main button {
   width:95vw;
+  display:flex;
+  justify-content: space-around;
 }
 .fa.fa-star.checked {
   color:gold;
@@ -68,6 +75,7 @@ p.expanded {
 
 .deleteButton {
   background-color:red;
+  border:black 1px solid;
 }
 
 .bookmarkButton * {
@@ -143,7 +151,7 @@ form button {
 }
 
 
-div.rate {
+section.rate {
   position:absolute;
   top:72.5vh;
   display: flex;
@@ -185,9 +193,63 @@ div.rate {
 }
 
 .errorBox {
-  color:palevioletred;
+  color:red;
   position:absolute;
   top:2.5vh;
-  right:5vw;
 }
 
+@media (min-width: 420px) {
+  h1 {
+    font-size: 40px;
+  }
+  #filter {
+    width:20vw;
+    font-size: 18px;
+  }
+  #filter option {
+    font-size: 18px;
+  }
+  main * {
+    font-size: 20px; 
+    font-weight: bold;
+  }
+  p.expanded {
+    padding:2.5vw;
+  }
+  main section.expandedButtonBox {
+    height:3.5vh;
+  }
+  .starBox {
+    width:15vw;
+    display:flex;
+    justify-content: space-evenly;
+  }
+  footer button{
+      font-size: 30px;
+  }
+  form * {
+    font-size: 30px;
+  }
+  section.rate {
+    display:flex;
+    justify-content: space-evenly;
+  }
+  section.rate * {
+    transform: scale(2,2)
+  }
+}
+
+@media (min-width:900px){
+  main * {
+    max-width:80vw;
+  }
+  .starbox {
+    width: 10vw;
+  }
+  p.expanded {
+    padding: 1vw;
+  }
+  form * {
+    max-width:60vw;
+  }
+}
