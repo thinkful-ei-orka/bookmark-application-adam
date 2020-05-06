@@ -1,4 +1,4 @@
-import $ from 'jquery'
+import $ from 'jquery';
 import api from './api.js';
 import store from './store.js';
 import './index.css';
@@ -18,6 +18,8 @@ const mainPageRender = function(){
     </select>
   </header>
   <main>
+    <ul>
+    </ul>
   </main>
   <footer>
     <button type='button' class='newBookmark'>+ New Bookmark &#x1F4D1</button>
@@ -36,36 +38,36 @@ const bookmarkString = function(filter){
     }
     if(y.expanded){
       return `
-        <button type='button' class='bookmarkButton' id='${y.id}' value='${y.id}'>
+        <li class='bookmarkButton' id='${y.id}' data-id='${y.id}'>
           <p>${y.title}</p>
           <section class='starBox'>
             ${z}
           </section>
-        </button>
-        <p data='${y.id} description' class='details expanded'>
+        </li>
+        <p data-id='${y.id} description' class='details expanded'>
           <b>Description:  </b>${y.desc===null?'No description provided':y.desc}
         </p>
-        <p data='${y.id} url' class='url expanded'>
+        <p data-id='${y.id} url' class='url expanded'>
           <b>Url:  </b>${y.url}
         </p>
         <section class='expandedButtonBox'>
-          <button type='button' data='${y.id} visit' class='visitButton' value='${y.url}'>
+          <button type='button' data-id='${y.id} visit' class='visitButton' value='${y.url}'>
             Visit
           </button>
-          <button type='button' data='${y.id} edit' class='editButton'>
+          <button type='button' data-id='${y.id} edit' class='editButton'>
             Edit
           </button>
-          <button class='deleteButton' type='button' data='${y.id}'>
+          <button class='deleteButton' type='button' data-id='${y.id}'>
             Delete &#128465
           </button>
         </section>`;
     } else {
-      return `<button type='button' class='bookmarkButton' id='${y.id}' value='${y.id}'><p>${y.title}</p><section class='starBox'>${z}</section>`;
+      return `<li class='bookmarkButton' id='${y.id}' data-id='${y.id}'><p>${y.title}</p><section class='starBox'>${z}</section></li>`;
     }}).join('');
 };
 
 const mainButtonRender = function(){
-  $('main').html(bookmarkString(store.Store.filter));
+  $('ul').html(bookmarkString(store.Store.filter));
   condensedHandler();
   visitButtonHandler();
   editButtonHandler();
@@ -75,10 +77,10 @@ const mainButtonRender = function(){
 const formRender=function(){
   $('form').html(`
     <p class='errorBox'></p>
-    <input type='text' id='title' name='title' placeholder='Title' required>
-    <input type='text' id='url' name='url' placeholder='URL' required>
-    <input type='text' id='desc' name='desc' placeholder='Description' required>
-    <section class='rate'>
+    <input aria-label='title' type='text' id='title' name='title' placeholder='Title' required>
+    <input aria-label='url' type='text' id='url' name='url' placeholder='URL' required>
+    <input aria-label='description' type='text' id='desc' name='desc' placeholder='Description' required>
+    <section aria-label='rating' class='rate'>
       <input type="radio" id="star5" name="rate" value=5 required>
         <label for="star5" title="text">5 stars</label>
       <input type="radio" id="star4" name="rate" value=4 required>
@@ -99,10 +101,10 @@ const formRender=function(){
 const editFormRender=function(item){
   $('form').html(`
     <p class='errorBox'></p>
-    <input type='text' id='title' name='title' value='${item.title}' required>
-    <input type='text' id='url' name='url' value='${item.url}' required>
-    <input type='text' id='desc' name='desc' ${item.desc===null?"placeholder='Description'":`value=${item.desc}`}>
-    <section class='rate'> 
+    <input aria-label='title' type='text' id='title' name='title' value='${item.title}' required>
+    <input aria-label='url' type='text' id='url' name='url' value='${item.url}' required>
+    <input aria-label='description' type='text' id='desc' name='desc' ${item.desc===null?"placeholder='Description'":`value='${item.desc}'`}>
+    <section aria-label='rating' class='rate'> 
       <input type="radio" id="star5" name="rate" value=5${item.rating===5?' checked':''}>
         <label for="star5" title="text">5 stars</label>
       <input type="radio" id="star4" name="rate" value=4${item.rating===4?' checked':''}>
@@ -114,9 +116,9 @@ const editFormRender=function(item){
       <input type="radio" id="star1" name="rate" value=1${item.rating===1?' checked':''}>
         <label for="star1" title="text">1 star</label>
     </section>
-    <section class='buttonBox data='${item.id}'>
+    <section class='buttonBox data-id='${item.id}'>
       <button type='button' class='cancelForm'>Cancel</button>
-      <button type='submit' class='editFormSubmit'>Update Bookmark</button>  
+      <button type='submit' class='editFormSubmit'>Update</button>  
     </section>`);
 };
 
@@ -138,8 +140,8 @@ const bookmarkIndex = function(id){
 };
 //Pulls the id of the bookmark to be changed, and fills in the expanded/detail view of that bookmark
 const condensedHandler=function(){
-  $('.bookmarkButton').on('click',function(e){
-    let targetId=$(e.currentTarget).val();
+  $('li').on('click',function(e){
+    let targetId=e.currentTarget.getAttribute('data-id');
     store.Store.bookmarks[bookmarkIndex(targetId)].expanded=!bookmarkById(targetId).expanded;
     mainButtonRender();
     
@@ -150,7 +152,7 @@ const condensedHandler=function(){
 ////////////Delete Handler
 const deleteButtonHandler = function(){
   $('.deleteButton').on('click',function(e){
-    api.apiDelete(e.currentTarget.getAttribute('data')).then(()=>refresh());
+    api.apiDelete(e.currentTarget.getAttribute('data-id')).then(()=>refresh());
   });
 };
 
@@ -169,7 +171,7 @@ let editId = '';
 //Handles the render and handling of the edit form
 const editButtonHandler = function(){
   $('.editButton').on('click',function(e){
-    editId = e.currentTarget.getAttribute('data').split(' ')[0];
+    editId = e.currentTarget.getAttribute('data-id').split(' ')[0];
     editFormRender(bookmarkById(editId));
     formCancelHandler();
     editFormSubmitHandler();
@@ -183,7 +185,9 @@ const editButtonHandler = function(){
 const editFormSubmitHandler = function(x){
   $('.editFormSubmit').on('click',function(e){
     e.preventDefault();
-    if ($(`input[name='desc']`).val()===''){store.Store.error='Description required';}
+    if ($(`input[name='title']`).val()===''){store.Store.error='Title required'}
+    else if ($(`input[name='url`).val()===''){store.Store.error='Url required'}
+    else if ($(`input[name='desc']`).val()===''){store.Store.error='Description required'}
     else if ($(`input[name='rate']:checked`).val()===undefined){
       store.Store.error='Rating required';}
     else{
@@ -220,7 +224,9 @@ const formComplete = function(){
 const formSubmitHandler=function(){
   $('.newFormSubmit').on('click',function(e){
     e.preventDefault();
-    if ($(`input[name='desc']`).val()===''){store.Store.error='Description required';}
+    if ($(`input[name='title']`).val()===''){store.Store.error='Title required'}
+    else if ($(`input[name='url`).val()===''){store.Store.error='Url required'}
+    else if ($(`input[name='desc']`).val()===''){store.Store.error='Description required';}
     else if ($(`input[name='rate']:checked`).val()===undefined){
       store.Store.error='Rating required';}
     else{

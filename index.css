@@ -30,16 +30,29 @@ header select {
   margin-top: 1vh;
   height:3vh;
 }
+#filter {
+  font-size: 15px;
+  height:auto
+}
+#filter option {
+  font-size: 15px;
+}
 main {
   display: flex;
   flex-direction: column;
   align-items: center;
   overflow:auto;
 }
-main button {
+ul {
+  margin:0;
+  padding:0;
+}
+ul li {
   width:95vw;
   display:flex;
   justify-content: space-around;
+  background-color: lightgray;
+  border: solid black 1px;
 }
 .fa.fa-star.checked {
   color:gold;
@@ -64,31 +77,41 @@ p.expanded {
 
 .expandedButtonBox {
   display:flex;
+  justify-content: center;
   width:95vw;
 }
 
-.bookmarkButton {
+li {
   display:flex;
+  justify-content:space-around;
   align-items: center;
   height: 5vh;
+  width:95vw;
 }
-
+.visitButton {
+  flex-grow:1;
+}
+.editButton {
+  flex-grow: 1;
+}
 .deleteButton {
   background-color:red;
   border:black 1px solid;
+  flex-grow: 1;
 }
 
-.bookmarkButton * {
+li * {
   height:20px;
 }
 
-.bookmarkButton p {
+li p {
   width:218px;
   margin:0;
   margin-top:5px;
 }
-.starBox * {
-  width:10px
+.starBox {
+  display:flex;
+  justify-content: space-evenly;
 }
 
 footer {
